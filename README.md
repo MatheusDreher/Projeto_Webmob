@@ -18,6 +18,27 @@ Criar uma plataforma onde um usuário/vendedor possa:
 
 ---
 
+## 📱 Aplicação Mobile (Ionic + Angular)
+
+O projeto foi estendido com uma aplicação móvel dedicada, desenvolvida com **Ionic Framework** e **Angular**, que consome o backend Django através de uma **API REST**.
+
+### Arquitetura Mobile
+
+- **Frontend:** Ionic Framework + Angular (para experiência nativa em iOS e Android).
+- **Backend:** Django REST Framework (DRF) para expor os dados e a lógica de negócio.
+- **Comunicação:** API RESTful com autenticação **JWT (JSON Web Tokens)**.
+
+### Funcionalidades Mobile
+
+O aplicativo móvel replica as principais funcionalidades do site, oferecendo uma experiência otimizada para dispositivos móveis:
+
+- Catálogo de produtos com navegação otimizada.
+- Login e Registro de usuários.
+- Carrinho de compras e Checkout.
+- Acesso a recursos nativos (como armazenamento local e notificações).
+
+---
+
 ## ✅ Requisitos da Disciplina Atendidos
 
 | Requisito | Implementação no GameMarket |
@@ -47,7 +68,12 @@ gamemarket/
 │  ├─ admin.py           # Configurações do painel admin
 │  ├─ models.py          # Produtos, Pedidos, Vendedor (User)
 │  ├─ forms.py           # Formulários para Anúncio e Checkout
-│  └─ views.py           # Lógica de Autenticação, Carrinho e CRUD
+│  ├─ serializers.py     # Serializadores para a API REST
+│  └─ api_views.py       # ViewSets da API REST
+│
+├─ market-mobile/        # Projeto App Mobile (Ionic + Angular)
+│  ├─ src/               # Código-fonte do App Mobile
+│  └─ ...
 │
 └─ manage.py
 ```
