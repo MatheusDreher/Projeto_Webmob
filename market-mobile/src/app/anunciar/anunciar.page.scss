@@ -1,0 +1,40 @@
+.upload-container {
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  background: #f9f9f9;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+
+  &.has-image {
+    border: 2px solid #10b981;
+    background: #fff;
+  }
+
+  ion-icon {
+    font-size: 3rem;
+    color: #999;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  // Previsão da imagem
+  img.preview {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+  }
+}

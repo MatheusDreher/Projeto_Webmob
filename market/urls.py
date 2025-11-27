@@ -28,4 +28,17 @@ urlpatterns = [
     # Rotas de Catálogo (Listagem e Detalhe)
     path('', views.product_list, name='product_list'),
     path('produto/<int:pk>/', views.product_detail, name='product_detail'),
+
+
+    path('api/produtos/', views.api_listar_produtos, name='api_listar_produtos'),
+    path('api/produtos/<int:produto_id>/', views.api_detalhe_produto, name='api_detalhe_produto'),
+
+    path('api/meus-anuncios/', views.api_meus_produtos, name='api_meus_produtos'),
+    path('api/meus-anuncios/<int:produto_id>/', views.api_meus_produtos, name='api_deletar_produto'),
+    path('api/anunciar/', views.api_criar_produto, name='api_criar_produto'),
+
+    path('api/editar-anuncio/<int:produto_id>/', views.api_editar_produto, name='api_editar_produto'),
+    path('api/comprar/', views.api_realizar_compra, name='api_realizar_compra'),
+
+
 ]

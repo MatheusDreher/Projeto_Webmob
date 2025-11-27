@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Meu Carrinho</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div *ngIf="itens.length === 0" style="text-align: center; margin-top: 40%; padding: 20px;">
+    <ion-icon name="cart-outline" style="font-size: 4rem; color: #ddd;"></ion-icon>
+    <h3 style="color: #666; font-weight: 600;">Seu carrinho está vazio</h3>
+    <ion-button routerLink="/home" fill="outline" color="primary" class="ion-margin-top">
+      Explorar Loja
+    </ion-button>
+  </div>
+
+  <ion-list *ngIf="itens.length > 0" style="background: transparent; padding: 16px;">
+    <ion-item *ngFor="let item of itens; let i = index" lines="none" 
+              style="--background: white; border-radius: 12px; margin-bottom: 12px; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+      
+      <ion-thumbnail slot="start">
+        <img [src]="'http://127.0.0.1:8000/media/' + item.imagem" style="border-radius: 8px;" />
+      </ion-thumbnail>
+
+      <ion-label>
+        <h2 style="font-weight: 700; color: #333;">{{ item.nome }}</h2>
+        <p style="color: #888;">{{ item.plataforma }}</p>
+        <h3 style="color: #10b981; font-weight: 800; margin-top: 4px;">{{ item.preco | currency:'BRL' }}</h3>
+      </ion-label>
+
+      <ion-button slot="end" fill="clear" color="danger" (click)="removerItem(i)">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+
+<ion-footer *ngIf="itens.length > 0" style="box-shadow: 0 -4px 10px rgba(0,0,0,0.05);">
+  <ion-toolbar style="--background: white;">
+    <div class="ion-padding" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <p style="margin: 0; font-size: 0.8rem; color: #666;">Total a Pagar</p>
+        <h2 style="margin: 0; font-weight: 900; color: #111; font-size: 1.5rem;">
+          {{ total | currency:'BRL' }}
+        </h2>
+      </div>
+      <ion-button (click)="finalizarCompra()" style="--background: #10b981; font-weight: bold;">
+        Finalizar
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

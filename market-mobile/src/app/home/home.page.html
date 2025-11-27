@@ -1,0 +1,110 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title style="font-weight: 900; font-size: 1.4rem; display: flex; align-items: center;">
+      <ion-icon name="game-controller" style="color: #10b981; margin-right: 8px;"></ion-icon>
+      <span style="color: #111827;">Game</span><span style="color: #10b981;">Market</span>
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button routerLink="/carrinho" style="--color: #000000;">
+        <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
+      </ion-button>
+      
+      <ion-button (click)="logout()" style="--color: #ef4444;">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-searchbar placeholder="Buscar por Nome..." 
+                   (ionInput)="buscar($event)"
+                   inputmode="search"
+                   style="
+                     --background: #f3f4f6; 
+                     --color: #000000; 
+                     --placeholder-color: #555555; 
+                     --icon-color: #333333; 
+                     --border-radius: 12px; 
+                     --box-shadow: none; 
+                     padding-inline: 16px;
+                     padding-bottom: 10px;
+                   ">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true" class="ion-padding-top">
+
+  
+  <div class="filtros-container ion-padding-horizontal">
+    <ion-chip *ngFor="let f of filtros" 
+              [color]="categoriaSelecionada === f.valor ? 'primary' : 'medium'"
+              [outline]="categoriaSelecionada !== f.valor"
+              (click)="carregarDados(f.valor)"
+              style="font-weight: 600;">
+      <ion-label>{{ f.label }}</ion-label>
+    </ion-chip>
+  </div>
+
+  <div class="ion-padding-horizontal ion-margin-bottom" style="display: flex; justify-content: flex-end;">
+    <ion-button routerLink="/meus-anuncios" fill="clear" size="small" style="--color: #10b981; font-weight: 600;">
+      Gerenciar Meus Anúncios >
+    </ion-button>
+  </div>
+
+  <ion-list lines="none" style="background: transparent; margin-top: 10px;">
+    
+    <ion-card *ngFor="let p of items" class="produto-card">
+      
+      <div class="image-container">
+        <div class="badge-categoria" 
+             [ngClass]="{
+               'badge-console': p.categoria === 'CONSOLE',
+               'badge-jogo': p.categoria === 'JOGO',
+               'badge-acessorio': p.categoria === 'ACESSORIO'
+             }">
+          {{ p.categoria || 'PRODUTO' }}
+        </div>
+
+        <img *ngIf="p.imagem" [src]="'http://127.0.0.1:8000/media/' + p.imagem" />
+        <div *ngIf="!p.imagem" class="no-image" style="color: #ccc;">
+          <ion-icon name="image-outline" size="large"></ion-icon>
+        </div>
+      </div>
+      
+      <ion-card-header>
+        <ion-card-subtitle>{{ p.plataforma }}</ion-card-subtitle>
+        <ion-card-title class="titulo-produto">{{ p.nome }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <h2 class="preco-produto">{{ p.preco | currency:'BRL' }}</h2>
+        
+        <p style="font-size: 0.8rem; margin-bottom: 10px; color: #666;">
+          <span *ngIf="p.estoque > 0" style="color: #10b981;">● {{ p.estoque }} em estoque</span>
+          <span *ngIf="p.estoque <= 0" style="color: #ef4444; font-weight: bold;">Esgotado</span>
+        </p>
+
+        <ion-button expand="block" class="btn-detalhes" 
+                    (click)="abrirDetalhes(p)"
+                    [disabled]="p.estoque <= 0">
+          {{ p.estoque > 0 ? 'Ver Detalhes' : 'Indisponível' }}
+        </ion-button>
+      </ion-card-content>
+
+    </ion-card>
+  </ion-list>
+
+  <div *ngIf="items.length === 0" style="text-align: center; margin-top: 50px; color: #666;">
+    <p>Nenhum produto encontrado.</p>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/anunciar" color="primary">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

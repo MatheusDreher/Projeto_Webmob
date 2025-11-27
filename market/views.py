@@ -8,6 +8,16 @@ from django.contrib import messages
 from .models import Produto, CATEGORIA_CHOICES, PLATAFORMA_CHOICES, Pedido
 from .forms import ProdutoForm, CheckoutForm
 from django.db import transaction
+from django.http import JsonResponse
+from .models import Produto
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+import json
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 # ------------------------------
 # VIEWS DO CATÁLOGO
@@ -272,3 +282,134 @@ def user_products(request):
         'products': user_listings,
     }
     return render(request, 'market/user_products.html', context)
+
+def api_listar_produtos(request):
+    categoria = request.GET.get('categoria')
+    busca = request.GET.get('busca') 
+    
+    produtos = Produto.objects.all()
+
+    if categoria:
+        produtos = produtos.filter(categoria=categoria)
+    
+    
+    if busca:
+        produtos = produtos.filter(Q(nome__icontains=busca) | Q(descricao__icontains=busca))
+
+    dados = list(produtos.values('id', 'nome', 'preco', 'imagem', 'plataforma', 'categoria', 'estoque'))
+    return JsonResponse(dados, safe=False)
+
+def api_detalhe_produto(request, produto_id):
+    # Filtramos pelo ID e pegamos o primeiro resultado
+    produto = list(Produto.objects.filter(id=produto_id).values(
+        'id', 'nome', 'descricao', 'preco', 'imagem', 
+        'plataforma', 'estoque', 'categoria', 'genero'
+    ))
+
+    if produto:
+        return JsonResponse(produto[0], safe=False) # Retorna só o dicionário, não uma lista
+    else:
+        return JsonResponse({'erro': 'Produto não encontrado'}, status=404)
+
+@csrf_exempt # Desativa verificação de CSRF para facilitar o mobile
+def api_cadastro_usuario(request):
+    if request.method == 'POST':
+        # Ler os dados enviados pelo Ionic
+        dados = json.loads(request.body)
+        username = dados.get('username')
+        password = dados.get('password')
+        email = dados.get('email')
+
+        # Verifica se já existe
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({'erro': 'Usuário já existe'}, status=400)
+
+        # Cria o usuário
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.save()
+
+        return JsonResponse({'mensagem': 'Usuário criado com sucesso!'}, status=201)
+
+@api_view(['GET', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def api_meus_produtos(request, produto_id=None):
+    if request.method == 'GET':
+        # Filtra apenas os produtos onde o 'vendedor' é o usuário do Token
+        produtos = Produto.objects.filter(vendedor=request.user)
+        daados = list(produtos.values('id', 'nome', 'preco', 'imagem', 'plataforma', 'estoque'))
+        return Response(dados)
+    
+    if request.method == 'DELETE':
+        
+        try:
+            prod = Produto.objects.get(id=produto_id, vendedor=request.user)
+            prod.delete()
+            return Response({'msg': 'Deletado'})
+        except Produto.DoesNotExist:
+            return Response({'erro': 'Produto não encontrado'}, status=404)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_criar_produto(request):
+    # Pega os dados do formulário
+    data = request.POST
+    imagem = request.FILES.get('imagem') # Pega o arquivo de imagem
+
+    estoque=data.get('estoque', 1),
+
+    # Cria o objeto no banco
+    novo_prod = Produto.objects.create(
+        vendedor=request.user,
+        nome=data.get('nome'),
+        preco=data.get('preco'),
+        descricao=data.get('descricao'),
+        categoria=data.get('categoria'),
+        plataforma=data.get('plataforma'),
+        imagem=imagem 
+    )
+    return Response({'id': novo_prod.id, 'msg': 'Criado com sucesso!'})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_editar_produto(request, produto_id):
+    
+    prod = get_object_or_404(Produto, id=produto_id, vendedor=request.user)
+
+    
+    data = request.POST
+    if 'nome' in data: prod.nome = data['nome']
+    if 'preco' in data: prod.preco = data['preco']
+    if 'descricao' in data: prod.descricao = data['descricao']
+    if 'categoria' in data: prod.categoria = data['categoria']
+    if 'plataforma' in data: prod.plataforma = data['plataforma']
+    if 'estoque' in data: prod.estoque = data['estoque']
+
+    estoque=data.get('estoque', 1),
+
+    
+    nova_imagem = request.FILES.get('imagem')
+    if nova_imagem:
+        prod.imagem = nova_imagem
+
+    prod.save()
+    return Response({'msg': 'Produto atualizado com sucesso!'})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_realizar_compra(request):
+    try:
+        dados = json.loads(request.body)
+        ids_produtos = dados.get('ids', [])
+
+        for id_prod in ids_produtos:
+            try:
+                prod = Produto.objects.get(id=id_prod)
+                if prod.estoque > 0:
+                    prod.estoque -= 1
+                    prod.save()
+            except Produto.DoesNotExist:
+                pass # Se o produto não existir, ignora
+        
+        return Response({'msg': 'Compra realizada e estoque atualizado!'})
+    except Exception as e:
+        return Response({'erro': str(e)}, status=400)

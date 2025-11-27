@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/home" text=""></ion-back-button></ion-buttons>
+    <ion-title>Novo Anúncio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="upload-container" [class.has-image]="arquivoImagem" (click)="fileInput.click()">
+    
+    <ion-icon [name]="arquivoImagem ? 'checkmark-circle' : 'cloud-upload-outline'" 
+              [color]="arquivoImagem ? 'success' : 'medium'"></ion-icon>
+    
+    <p *ngIf="!arquivoImagem">Toque para enviar foto</p>
+    <p *ngIf="arquivoImagem" style="color: #10b981; font-weight: bold;">
+      Foto Selecionada!
+    </p>
+
+    <input #fileInput type="file" (change)="selecionarImagem($event)" style="display: none;" accept="image/*" />
+  </div>
+
+  <div class="form-group">
+    <ion-item lines="none" class="item-input-padrao">
+      <ion-label position="stacked" color="medium">Nome do Produto</ion-label>
+      <ion-input [(ngModel)]="prod.nome" placeholder="Ex: Controle Xbox"></ion-input>
+    </ion-item>
+  </div>
+
+  <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+    
+    <ion-item lines="none" class="item-input-padrao" style="flex: 1;">
+      <ion-label position="stacked" color="medium">Preço (R$)</ion-label>
+      <ion-input type="number" [(ngModel)]="prod.preco" placeholder="0,00"></ion-input>
+    </ion-item>
+
+    <ion-item lines="none" class="item-input-padrao" style="flex: 1;">
+      <ion-label position="stacked" color="medium">Estoque (Qtd)</ion-label>
+      <ion-input type="number" [(ngModel)]="prod.estoque" placeholder="1"></ion-input>
+    </ion-item>
+
+  </div>
+
+  <div class="form-group">
+    <ion-item lines="none" class="item-input-padrao">
+      <ion-label position="stacked" color="medium">Categoria</ion-label>
+      <ion-select [(ngModel)]="prod.categoria" interface="popover" placeholder="Selecione">
+        <ion-select-option value="JOGO">Jogo</ion-select-option>
+        <ion-select-option value="CONSOLE">Console</ion-select-option>
+        <ion-select-option value="ACESSORIO">Acessório</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </div>
+
+  <ion-item lines="none" class="item-input-padrao">
+    <ion-label position="stacked" color="medium">Plataforma</ion-label>
+    <ion-select [(ngModel)]="prod.plataforma" interface="popover" placeholder="Selecione">
+      <ion-select-option value="PS5">PlayStation 5</ion-select-option>
+      <ion-select-option value="PS4">PlayStation 4</ion-select-option>
+      <ion-select-option value="XBOX_SERIES">Xbox Series</ion-select-option>
+      <ion-select-option value="XBOX_ONE">Xbox One</ion-select-option>
+      <ion-select-option value="NINTENDO_SWITCH">Nintendo Switch</ion-select-option>
+      <ion-select-option value="PC">PC</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item lines="none" class="item-input-padrao">
+    <ion-label position="stacked" color="medium">Descrição Detalhada</ion-label>
+    <ion-textarea [(ngModel)]="prod.descricao" rows="5" placeholder="Conte mais sobre o produto..."></ion-textarea>
+  </ion-item>
+
+  <ion-button expand="block" (click)="salvar()" 
+              style="--background: #10b981; font-weight: bold; margin-top: 20px; height: 50px; --border-radius: 12px;">
+    Publicar Agora
+  </ion-button>
+
+</ion-content>

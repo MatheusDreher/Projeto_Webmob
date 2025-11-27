@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gerenciar Anúncios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding-top">
+
+  <div *ngIf="itens.length === 0" style="text-align: center; margin-top: 40%; padding: 20px;">
+    <ion-icon name="pricetags-outline" style="font-size: 4rem; color: #ddd;"></ion-icon>
+    <h3 style="color: #666; font-weight: 600;">Você não tem anúncios</h3>
+    <p style="color: #999; font-size: 0.9rem;">Comece a vender seus jogos parados!</p>
+    <ion-button routerLink="/anunciar" class="ion-margin-top" style="--background: #10b981;">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Criar Anúncio
+    </ion-button>
+  </div>
+
+  <ion-list *ngIf="itens.length > 0" style="background: transparent; padding: 16px;">
+    
+    <ion-item *ngFor="let item of itens" lines="none" 
+              style="--background: white; border-radius: 12px; margin-bottom: 12px; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+      
+      <ion-thumbnail slot="start" style="border-radius: 8px; overflow: hidden; background: #f9f9f9;">
+        <img [src]="'http://127.0.0.1:8000/media/' + item.imagem" style="object-fit: cover; width: 100%; height: 100%;" />
+      </ion-thumbnail>
+
+      <ion-label>
+        <p style="font-size: 0.75rem; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">
+          {{ item.plataforma }}
+        </p>
+        <h2 style="font-weight: 700; color: #333; font-size: 1rem;">{{ item.nome }}</h2>
+        <h3 style="color: #10b981; font-weight: 800; margin-top: 4px;">{{ item.preco | currency:'BRL' }}</h3>
+      </ion-label>
+
+      <div slot="end" style="display: flex; gap: 5px;">
+        
+        <ion-button fill="clear" style="--color: #666; height: 40px; width: 40px;" 
+                    [routerLink]="['/editar-anuncio', item.id]">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button fill="clear" style="--color: #ef4444; height: 40px; width: 40px;" 
+                    (click)="confirmarExclusao(item)">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+        
+      </div>
+
+    </ion-item>
+  </ion-list>
+
+</ion-content>

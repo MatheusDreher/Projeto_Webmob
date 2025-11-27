@@ -1,0 +1,103 @@
+
+ion-content {
+  --background: #f3f4f6; 
+}
+
+
+ion-header {
+  background: #ffffff;
+  
+  ion-toolbar {
+    --background: #ffffff; 
+    --color: #111827;     
+    --border-width: 0;     
+    
+   
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+}
+
+
+.produto-card {
+  --background: #ffffff; 
+  background: #ffffff;
+  border-radius: 16px;
+  margin-inline: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+  border: 1px solid #e5e7eb;
+  position: relative;
+  overflow: visible; 
+}
+
+.image-container {
+  width: 100%;
+  height: 200px;
+  background-color: #ffffff;
+  position: relative; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #f0f0f0;
+
+  img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain; 
+  }
+}
+
+
+.badge-categoria {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff !important; 
+  
+  z-index: 10; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
+.badge-console { background-color: #ec4899; }
+.badge-jogo { background-color: #8b5cf6; }    
+.badge-acessorio { background-color: #10b981; } 
+.badge-padrao { background-color: #6b7280; }   
+
+
+ion-card-subtitle {
+  color: #9ca3af;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+
+.titulo-produto {
+  color: #1f2937; 
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.preco-produto {
+  color: #10b981; 
+  font-weight: 900;
+  font-size: 1.6rem;
+  margin-top: 8px;
+}
+
+
+.btn-detalhes {
+  --background: #10b981;
+  --background-hover: #059669;
+  --border-radius: 8px;
+  font-weight: 700;
+  margin-top: 12px;
+}
