@@ -1,0 +1,48 @@
+<a href="{% url 'market:product_list' %}" class="py-2 px-3 rounded-lg hover:bg-gray-100">
+    Catálogo
+</a>
+
+{% if user.is_authenticated %}
+
+    <!-- Carrinho -->
+    <a href="{% url 'market:cart_detail' %}" class="relative py-2 px-3 rounded-lg hover:bg-gray-100 flex items-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+
+        {% with cart_count=request.session.cart|length %}
+        {% if cart_count > 0 %}
+        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+            {{ cart_count }}
+        </span>
+        {% endif %}
+        {% endwith %}
+    </a>
+
+    <a href="{% url 'market:create_product' %}" class="bg-green-500 text-white py-2 px-3 rounded-lg hover:bg-green-600">
+        + Anunciar
+    </a>
+
+    <a href="{% url 'market:user_products' %}" class="py-2 px-3 rounded-lg hover:bg-gray-100">
+        Meus Anúncios
+    </a>
+
+    <form method="post" action="{% url 'market:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="py-2 px-3 rounded-lg text-red-600 hover:bg-gray-100">
+            Sair ({{ user.username }})
+        </button>
+    </form>
+
+{% else %}
+    <a href="{% url 'market:login' %}" class="py-2 px-3 rounded-lg border border-gray-300 hover:border-primary">
+        Login
+    </a>
+
+    <a href="{% url 'market:register' %}" class="py-2 px-3 rounded-lg bg-secondary text-white hover:bg-orange-600">
+        Cadastrar
+    </a>
+{% endif %}
+
+<a href="/admin/" class="py-2 px-3 rounded-lg hover:bg-gray-100">Admin</a>

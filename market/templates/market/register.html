@@ -1,0 +1,49 @@
+{% extends "market/base.html" %}
+
+{% block title %}Cadastrar - GameMarket{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Criar Nova Conta</h2>
+        
+        <form method="post" action="{% url 'market:register' %}" class="space-y-6">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ field.label }}
+                    </label>
+                    <div class="mt-1">
+                        {{ field }}
+                    </div>
+                    {% for error in field.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="p-3 bg-red-100 text-red-700 rounded-lg">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <button type="submit" 
+                    class="w-full bg-secondary hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg">
+                Registrar
+            </button>
+        </form>
+        
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Já possui uma conta?
+            <a href="{% url 'market:login' %}" class="font-medium text-primary hover:text-teal-700 transition duration-300">
+                Fazer Login
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}

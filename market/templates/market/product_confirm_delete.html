@@ -1,0 +1,31 @@
+{% extends "market/base.html" %}
+
+{% block title %}Confirmar Exclusão - GameMarket{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+        <h2 class="text-3xl font-bold text-red-700 mb-6 text-center">Confirmar Exclusão</h2>
+        
+        <p class="text-lg text-gray-700 mb-6 text-center">
+            Você tem certeza que deseja excluir o anúncio:
+            <strong class="block mt-2 text-xl">{{ product.nome }}</strong>?
+        </p>
+        <p class="text-center text-sm text-gray-500 mb-8">Esta ação não pode ser desfeita.</p>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            
+            <button type="submit" 
+                    class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg">
+                Sim, Excluir Definitivamente
+            </button>
+            
+            <a href="{% url 'market:user_products' %}" 
+               class="block w-full text-center text-gray-700 border border-gray-300 py-3 px-4 rounded-lg hover:bg-gray-100 transition duration-300">
+                Não, Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

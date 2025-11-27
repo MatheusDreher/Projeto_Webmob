@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mercado de Jogos e Consoles{% endblock %}</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Config Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#0d9488',
+                        'secondary': '#f97316',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonte Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Alpine.js (para o menu mobile) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        .message-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .message-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .nav-link-effect {
+            transition: all 0.3s ease;
+        }
+        .nav-link-effect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <!-- NAVBAR RESPONSIVA -->
+    <header x-data="{ open: false }" class="bg-white shadow-lg sticky top-0 z-20">
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+
+            <!-- LOGO -->
+            <a href="{% url 'market:product_list' %}" class="text-2xl font-bold text-primary hover:text-secondary transition flex items-center">
+                <span class="-rotate-12 mr-1">🎮</span> GameMarket
+            </a>
+
+            <!-- BOTÃO MOBILE -->
+            <button @click="open = !open" class="lg:hidden p-2 rounded-md border border-gray-300">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor">
+                    <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 12h16M4 18h16"/>
+                    <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <!-- MENU DESKTOP -->
+            <nav class="hidden lg:flex items-center space-x-4 ml-auto">
+                {% include 'market/_nav_links.html' %}
+            </nav>
+
+        </div>
+
+        <!-- MENU MOBILE DROPDOWN -->
+        <div x-show="open" class="lg:hidden bg-white shadow-inner border-t">
+            <nav class="flex flex-col p-4 space-y-2">
+                {% include 'market/_nav_links.html' %}
+            </nav>
+        </div>
+
+    </header>
+
+    <!-- MENSAGENS -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for message in messages %}
+        <div class="p-4 rounded-lg mb-3 shadow-md
+            {% if message.tags == 'success' %}message-success
+            {% elif message.tags == 'warning' %}message-warning
+            {% elif message.tags == 'error' %}message-error
+            {% else %}bg-blue-100 text-blue-700 border border-blue-300{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm">
+            <p>&copy; {% now "Y" %} GameMarket - Seu Mercado de Jogos.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+{% extends "market/base.html" %}
+{% load widget_tweaks %} 
+{% load market_filters %} 
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 border-b pb-4">{{ title }}</h2>
+        
+        <form method="post" class="space-y-6" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {# CORREÇÃO: Necessário carregar o filtro market_filters para o |split funcionar #}
+            {% load market_filters %} 
+            
+            {% for field in form %}
+                {# BLOCO 1: Campos obrigatórios em todas as categorias #}
+                {% if field.name in "nome descricao preco estoque categoria plataforma imagem"|split:" " %}
+                    <div id="field-{{ field.name }}">
+                        {# CORREÇÃO: Adicionado mb-2 ao label para espaçamento #}
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ field.label }}
+                        </label>
+                        <div class="mt-1">
+                            {% if field.name == 'imagem' %}
+                                {{ field|add_class:"w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-teal-700" }}
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                        </div>
+                        {% for error in field.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                        {% if field.help_text %}
+                            <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <h3 class="text-xl font-bold text-gray-800 pt-4 border-t mt-6">Especificações Técnicas</h3>
+            <p class="text-sm text-gray-600">Aparecerá no detalhe do produto. Campos irrelevantes devem ser deixados vazios.</p>
+
+            {% for field in form %}
+                {# BLOCO 2: Campos condicionais #}
+                {% if field.name == 'genero' or field.name == 'classificacao_etaria' %}
+                    <div id="field-game-{{ field.name }}" class="hidden">
+                        {# CORREÇÃO: Adicionado mb-2 ao label para espaçamento #}
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ field.label }}
+                        </label>
+                        <div class="mt-1">{{ field }}</div>
+                        {% for error in field.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% elif field.name == 'cpu_gpu' or field.name == 'memoria_ram' %}
+                    <div id="field-console-{{ field.name }}" class="hidden">
+                        {# CORREÇÃO: Adicionado mb-2 ao label para espaçamento #}
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ field.label }}
+                        </label>
+                        <div class="mt-1">{{ field }}</div>
+                        {% for error in field.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% elif field.name == 'compatibilidade' %}
+                    <div id="field-accessory-{{ field.name }}" class="hidden">
+                        {# CORREÇÃO: Adicionado mb-2 ao label para espaçamento #}
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ field.label }}
+                        </label>
+                        <div class="mt-1">{{ field }}</div>
+                        {% for error in field.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="p-3 bg-red-100 text-red-700 rounded-lg">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <button type="submit" 
+                    class="w-full bg-primary hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg">
+                {% if product_pk %}Salvar Alterações{% else %}Publicar Anúncio{% endif %}
+            </button>
+        </form>
+        
+    </div>
+</div>
+
+<script>
+    // Função JavaScript para mostrar/esconder campos baseados na seleção de Categoria
+    document.addEventListener('DOMContentLoaded', function() {
+        const categorySelect = document.getElementById('id_categoria');
+
+        // Campos específicos
+        const gameFields = ['field-game-genero', 'field-game-classificacao_etaria'];
+        const consoleFields = ['field-console-cpu_gpu', 'field-console-memoria_ram'];
+        const accessoryFields = ['field-accessory-compatibilidade'];
+
+        function toggleFields(selectedCategory) {
+            // Esconde todos os campos primeiro
+            [...gameFields, ...consoleFields, ...accessoryFields].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.classList.add('hidden');
+                }
+            });
+
+            // Mostra os campos relevantes
+            let fieldsToShow = [];
+            if (selectedCategory === 'JOGO') {
+                fieldsToShow = gameFields;
+            } else if (selectedCategory === 'CONSOLE') {
+                fieldsToShow = consoleFields;
+            } else if (selectedCategory === 'ACESSORIO') {
+                fieldsToShow = accessoryFields;
+            }
+
+            fieldsToShow.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.classList.remove('hidden');
+                }
+            });
+        }
+
+        // Listener para mudanças no campo de Categoria
+        if (categorySelect) {
+            categorySelect.addEventListener('change', function() {
+                toggleFields(this.value);
+            });
+
+            // Executa a função na carga da página para exibir o estado inicial (ex: na edição)
+            toggleFields(categorySelect.value);
+        }
+    });
+</script>
+{% endblock %}

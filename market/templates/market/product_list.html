@@ -1,0 +1,144 @@
+{% extends "market/base.html" %}
+
+{% block title %}Catálogo de Jogos{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6">
+        Explore Nosso Catálogo
+    </h1>
+
+    <!-- Formulário de busca e filtros -->
+    <form 
+        method="GET" 
+        action="{% url 'market:product_list' %}" 
+        class="bg-white p-4 rounded-xl shadow-lg mb-8 border border-gray-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
+
+        <!-- Campo de busca -->
+        <div class="sm:col-span-2">
+            <label for="id_q" class="block text-sm font-medium text-gray-700 mb-1">Buscar por Nome ou Descrição</label>
+            <input 
+                type="text" 
+                name="q" 
+                id="id_q" 
+                value="{{ query|default:'' }}"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+            >
+        </div>
+
+        <!-- Categoria -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+            <select name="categoria" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-primary focus:border-primary"
+            >
+                <option value="">Todas</option>
+                {% for code, name in categoria_choices %}
+                    <option value="{{ code }}" {% if code == selected_category %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Plataforma -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Plataforma</label>
+            <select name="plataforma"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-primary focus:border-primary"
+            >
+                <option value="">Todas</option>
+                {% for code, name in plataforma_choices %}
+                    <option value="{{ code }}" {% if code == selected_platform %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Botões -->
+        <div class="sm:col-span-2 lg:col-span-4 flex flex-col sm:flex-row justify-end gap-3 pt-2">
+            <button type="submit" 
+               class="bg-primary hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition shadow">
+                Aplicar Filtros
+            </button>
+
+            <a href="{% url 'market:product_list' %}" 
+               class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-lg transition shadow text-center">
+                Limpar
+            </a>
+        </div>
+    </form>
+
+    <!-- Grid de produtos -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+
+        {% if products %}
+            {% for product in products %}
+                <a href="{% url 'market:product_detail' pk=product.pk %}"
+                    class="block bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden border border-gray-200">
+
+                    <!-- Imagem -->
+                    <div class="relative h-44 sm:h-48 bg-gray-100">
+                        {% if product.imagem %}
+                            <img 
+                                src="{{ product.imagem.url }}" 
+                                alt="Imagem de {{ product.nome }}"
+                                class="w-full h-full object-cover hover:scale-105 transition"
+                            >
+                        {% else %}
+                            <div class="w-full h-full bg-gray-800 flex items-center justify-center text-white font-bold">
+                                Sem Imagem
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Conteúdo -->
+                    <div class="p-4">
+                        <span class="
+                            text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full mb-2 inline-block
+                            {% if product.categoria == 'CONSOLE' %}text-red-700 bg-red-100
+                            {% elif product.categoria == 'JOGO' %}text-blue-700 bg-blue-100
+                            {% else %}text-green-700 bg-green-100
+                            {% endif %}"
+                        >
+                            {{ product.get_categoria_display }}
+                        </span>
+
+                        <h2 class="text-lg font-bold text-gray-900 mb-1 truncate">
+                            {{ product.nome }}
+                        </h2>
+
+                        <p class="text-sm text-gray-500 mb-3">
+                            {{ product.get_plataforma_display }}
+                        </p>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-extrabold text-primary">
+                                R$ {{ product.preco|floatformat:2 }}
+                            </span>
+
+                            <span class="text-sm font-medium 
+                                {% if product.estoque > 0 %}
+                                text-green-600
+                                {% else %}
+                                text-red-600
+                                {% endif %}">
+                                {% if product.estoque > 0 %}Em Estoque{% else %}Esgotado{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                </a>
+            {% endfor %}
+        {% else %}
+
+            <div class="col-span-full bg-yellow-50 p-6 rounded-lg text-center border-l-4 border-yellow-400">
+                <p class="text-lg text-yellow-800 font-medium">
+                    Nenhum produto encontrado com os filtros aplicados.
+                </p>
+            </div>
+
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
